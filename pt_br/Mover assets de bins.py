@@ -11,7 +11,7 @@ else:
     print('Porfavor arraste uma pasta para o .exe !')
     input('')
     
-for_test = path.dirname(sys.argv[0]) + '/ritobin/ritobin_cli.exe'
+for_test = path.dirname(argv[0]) + '/ritobin/ritobin_cli.exe'
 if not path.exists(for_test):
     print("Não foi encontrado o /ritobin/ritobin_cli.exe")
     input('')
