@@ -10,7 +10,7 @@ if len(argv) == 2:
 else:
     print('Plz drag and drop a folder to the app!')
 
-for_test = path.dirname(sys.argv[0]) + '/ritobin/ritobin_cli.exe'
+for_test = path.dirname(argv[0]) + '/ritobin/ritobin_cli.exe'
 if not path.exists(for_test):
     print("Didn't found /ritobin/ritobin_cli.exe")
     input('')
