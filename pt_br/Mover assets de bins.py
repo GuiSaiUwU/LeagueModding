@@ -18,32 +18,23 @@ if not path.exists(for_test):
  
 will_move = input('Quer mover os arquivos? digite 1 para move-los: ')
 if will_move == '1':
-    print('Regras para quando for mover arquivos:')
-    print('*A Pesquisa precisa terminar com / no final.')
-    print('*A Pesquisa precisa começar sem nenhuma / no inicio!!')
-    print('**Exemplo: assets/characters/camille/skins/base/particles/')
-    while True:
-        search = input('O que estamos pesquisando? UwU: ').lower().replace('\\', '/')
-        if not search.endswith('/'):
-            print('Pfv adicione / no final do caminho de pesquisa! ')
-        elif search.startswith('/'):
-            print('Pfv não coloque / no inicio do caminho! ')
-        elif not search.startswith('/') and search.endswith('/'):
-            break
-
-    print('*Mesmas regras, precisa começar sem / e terminar com /')
-    print('**Exemplo: assets/nova_pasta/particles/uwu/')
-    while True:
-        replace = input('Estamos movendo para qual pasta? UwU: ').lower().replace('\\', '/')
-        if not replace.endswith('/'):
-            print('Pfv adicione / no final do caminho da nova pasta! ')
-        elif replace.startswith('/'):
-            print('Pfv não coloque / no inicio do caminho! ')
-        elif not replace.startswith('/') and replace.endswith('/'):
-            break
+    print('*Digite o caminho da pasta principal até a pasta com texturas')
+    print('**Exemplo: assets/characters/camille/skins/base/particles')
+    search = input('O que estamos pesquisando? UwU: ').lower().replace('\\', '/')
+    search = search.rstrip('/')
+    search = search.lstrip('/')
+    search = f'{search}/'
+    
+    print('*Agora o caminho da nova pasta das texturas')
+    print('**Exemplo: assets/nova_pasta/particles/uwu')
+    replace = input('Estamos movendo para qual pasta? UwU: ').lower().replace('\\', '/')
+    replace = replace.rstrip('/')
+    replace = replace.lstrip('/')
+    replace = f'{replace}/'
+    
 else:
-    search = input('What we will be searching here?: ').lower()
-    replace = input('We will replace for what?: ').lower()
+    search = input('O que estamos procurando?: ').lower()
+    replace = input('E devemos substituir por?: ').lower()
 
 bins = compile('\.bin$', flags=IGNORECASE)
 assets = compile(r'".+"')
@@ -54,7 +45,7 @@ for root, dirr, files in walk(first):
     for file in files:
         if file.lower().endswith('.bin'):
             fullpath = path.join(root, file)
-            run(rf'ritobin/ritobin_cli.exe "{fullpath}"')
+            run([for_test, fullpath])
             remove(fullpath)
             newfile = sub(bins, '.py', fullpath)
 
@@ -81,18 +72,25 @@ for root, dirr, files in walk(first):
                                     
                                     new = sub(search, replace, moving.lower())
                                     new_files.append(new)
-                                    
 
                             except Exception as e:
                                 print(f'{e}')
 
                         line = p.readline()
 
-            with open(newfile, 'w') as q:
-                data = data.lower().replace(search, replace).replace('"prop"', '"PROP"')
-                q.write(data)
+            with open(newfile, 'r') as q:
+                data = q.readlines()
 
-            run(rf'ritobin/ritobin_cli.exe "{newfile}"')
+            with open(newfile, 'w') as fileuwu:
+                for line in data:
+                    if search in line.lower():
+                        temp = findall(search, line, IGNORECASE)
+                        newline = line.replace(temp[0], replace)
+                        fileuwu.write(newline)
+                    else:
+                        fileuwu.write(line)
+
+            run([for_test, newfile])
             remove(newfile)
 
 if will_move == '1':
