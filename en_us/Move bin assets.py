@@ -9,6 +9,7 @@ if len(argv) == 2:
     first = argv[1]
 else:
     print('Plz drag and drop a folder to the app!')
+    input('')
 
 for_test = path.dirname(argv[0]) + '/ritobin/ritobin_cli.exe'
 if not path.exists(for_test):
@@ -17,28 +18,21 @@ if not path.exists(for_test):
 
 will_move = input('It will move type "1" for yes, anything for no: ')
 if will_move == '1':
-    print('Rules for when moving:')
-    print('*The search needs to starts without / and ends with a /')
-    print('**Example: assets/characters/camille/skins/base/particles/')
-    while True:
-        search = input('What we will be searching here uwu?: ').lower().replace('\\', '/')
-        if not search.endswith('/'):
-            print('Plz add / in the end of the path! ')
-        elif search.startswith('/'):
-            print('Plz dont use / in the start of the path! ')
-        elif not search.startswith('/') and search.endswith('/'):
-            break
+    print('')
+    print('*Example: assets/characters/camille/skins/base/particles/')
+    search = input('What we will be searching here uwu?: ').lower().replace('\\', '/')
+    search = search.rstrip('/')
+    search = search.lstrip('/')
+    search = f'{search}/'
     
-    print('*Same rules for replace, needs to start without / and ends with a /')
-    print('**Example: assets/new_folder/particles/uwu/')
-    while True:
-        replace = input('We will be moving for which folder?: ').lower().replace('\\', '/')
-        if not replace.endswith('/'):
-            print('Plz add / in the end of the path! ')
-        elif replace.startswith('/'):
-            print('Plz dont use / in the start of the path! ')
-        elif not replace.startswith('/') and replace.endswith('/'):
-            break
+    print('')
+    print('*So, now its the folder that the particles will be moved')
+    print('**Example: assets/new_folder/particles/uwu')
+    replace = input('We will be moving for which folder?: ').lower().replace('\\', '/')
+    replace = replace.rstrip('/')
+    replace = replace.lstrip('/')
+    replace = f'{replace}/'
+    
 else:
     search = input('What we will be searching here?: ').lower()
     replace = input('We will replace for what?: ').lower()
@@ -52,12 +46,9 @@ for root, dirr, files in walk(first):
     for file in files:
         if file.lower().endswith('.bin'):
             fullpath = path.join(root, file)
-            run(rf'ritobin/ritobin_cli.exe "{fullpath}"')
+            run([for_test, fullpath])
             remove(fullpath)
             newfile = sub(bins, '.py', fullpath)
-
-            with open(newfile, 'r') as p:
-                data = p.read()
 
             if will_move == '1':
                 if not path.isdir(f'{first}/{sub("/$", "", replace)}'):
@@ -79,18 +70,25 @@ for root, dirr, files in walk(first):
                                     
                                     new = sub(search, replace, moving.lower())
                                     new_files.append(new)
-                                    
 
                             except Exception as e:
                                 print(f'{e}')
 
                         line = p.readline()
 
-            with open(newfile, 'w') as q:
-                data = data.lower().replace(search, replace).replace('"prop"', '"PROP"')
-                q.write(data)
+            with open(newfile, 'r') as q:
+                data = q.readlines()
 
-            run(rf'ritobin/ritobin_cli.exe "{newfile}"')
+            with open(newfile, 'w') as fileuwu:
+                for line in data:
+                    if search in line.lower():
+                        temp = findall(search, line, IGNORECASE)
+                        newline = line.replace(temp[0], replace)
+                        fileuwu.write(newline)
+                    else:
+                        fileuwu.write(line)
+
+            run([for_test, newfile])
             remove(newfile)
 
 if will_move == '1':
