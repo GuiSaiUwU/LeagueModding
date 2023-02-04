@@ -49,9 +49,6 @@ for root, dirr, files in walk(first):
             remove(fullpath)
             newfile = sub(bins, '.py', fullpath)
 
-            with open(newfile, 'r') as p:
-                data = p.read()
-
             if will_move == '1':
                 if not path.isdir(f'{first}/{sub("/$", "", replace)}'):
                     makedirs(f'{first}/{sub("/$", "", replace)}')
